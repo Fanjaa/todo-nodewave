@@ -6,6 +6,7 @@ import api from '../lib/axios'
 
 interface AuthContextType {
   isAuthenticated: boolean;
+  loading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
@@ -15,6 +16,8 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); 
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -25,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setIsAuthenticated(false);
     }
+    setLoading(false); // Setelah status autentikasi selesai diperiksa, set loading ke false
   }, []);
 
  
@@ -59,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

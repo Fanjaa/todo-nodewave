@@ -2,20 +2,23 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import TodoList from "@/components/todo/TodoList";
 
 export default function TodoPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
+  // Pastikan redirect terjadi setelah autentikasi selesai tanpa loading UI
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
+    if (!loading && !isAuthenticated) {  // Pastikan tidak ada loading dan autentikasi salah
+      router.push("/login");  // Redirect ke login page
     }
-  }, [isAuthenticated, router]);
-  
+  }, [isAuthenticated, loading, router]);
+
+  if (loading) {
+    return null; // Render nothing saat loading, tidak ada loading UI yang ditampilkan
+  }
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -40,10 +43,12 @@ export default function TodoPage() {
           <h1 className="text-2xl font-bold text-center text-blue-600 mb-4">
             To Do
           </h1>
-        <TodoList />
+          <TodoList />
         </main>
       </div>
     </div>
+  );
+}
 
     // <div className="min-h-screen bg-gray-50 py-8">
     //   <div className="max-w-4xl mx-auto px-4">
@@ -56,5 +61,5 @@ export default function TodoPage() {
     //     <TodoList />
     //   </div>
     // </div>
-  );
-}
+//   );
+// }

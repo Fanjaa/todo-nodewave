@@ -10,11 +10,10 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();  // Menggunakan loading untuk memeriksa status autentikasi
   const [todos, setTodos] = useState<TodoResponse['content']['entries']>([]);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
 
   const fetchTodos = async () => {
     try {
@@ -25,21 +24,19 @@ export default function AdminPage() {
       setTotalPages(response.data.content.totalPage);
     } catch (error) {
       console.error('Failed to fetch todos:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!loading && !isAuthenticated) {
       router.push('/login');
       return;
     }
     fetchTodos();
-  }, [isAuthenticated, page, router]);
+  }, [isAuthenticated, loading, page, router]);
 
-  if (!isAuthenticated || isLoading) {
-    return null;
+  if (loading || !isAuthenticated) {
+    return null;  // Tidak menampilkan apapun sampai autentikasi selesai
   }
 
   return (
