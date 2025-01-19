@@ -1,10 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoItem from "./TodoItem";
 import TodoForm from "./TodoForm";
 import Button from "../ui/Button";
-import React from "react";
 import { Todo, TodoResponse } from "../../types/todo";
 import api from "../../lib/axios";
 
@@ -32,28 +29,23 @@ export default function TodoList() {
       setError(error.response?.data?.message || "Failed to add todo");
     }
   };
+
   const handleToggleTodo = async (id: string) => {
     try {
-      const body = { action: "DONE" }; // Body untuk mengubah status task
-      const token = localStorage.getItem('token'); // Ambil token dari localStorage
+      const currentTodo = todos.find(todo => todo.id === id);
+      const body = { action: currentTodo?.isDone ? "UNDONE" : "DONE" };
+      const token = localStorage.getItem('token');
 
-      // Cek apakah token ada
       if (!token) {
         throw new Error("Authorization token is missing");
+      }
 
-      }  
-      // Mengirim request PUT dengan body JSON dan Authorization header
       await api.put(
-        `/todos/${id}/mark`, 
-        body, // Body dikirim dalam request
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Header Authorization
-          },
-        }
+        `/todos/${id}/mark`,
+        body,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-  
-      // Mengupdate status todo di state setelah berhasil
+
       setTodos((prev) =>
         prev.map((todo) =>
           todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
@@ -63,7 +55,6 @@ export default function TodoList() {
       setError(error.response?.data?.message || "Failed to toggle todo");
     }
   };
-  
 
   const handleDeleteTodo = async (id: string) => {
     try {
@@ -81,6 +72,12 @@ export default function TodoList() {
   if (isLoading) {
     return <div>Loading...</div>;
   }
+
+  // Sorting todos berdasarkan isDone: true di atas, false di bawah
+  const sortedTodos = todos.sort((a, b) => {
+    if (a.isDone === b.isDone) return 0;
+    return a.isDone ? -1 : 1; // Urutkan yang isDone: true di atas
+  });
 
   return (
     <div>
@@ -116,8 +113,9 @@ export default function TodoList() {
         {error && (
           <div className="p-3 bg-red-100 text-red-700 rounded-lg">{error}</div>
         )}
+
         <div className="space-y-2">
-          {todos.map((todo) => (
+          {sortedTodos.map((todo) => (
             <div
               key={todo.id}
               className="flex items-center justify-between mb-2"
@@ -162,24 +160,5 @@ export default function TodoList() {
         Delete Selected
       </button>
     </div>
-
-    // <div className="space-y-4">
-    //   {error && (
-    //     <div className="p-3 bg-red-100 text-red-700 rounded-lg">
-    //       {error}
-    //     </div>
-    //   )}
-    //   <TodoForm onSubmit={handleAddTodo} />
-    //   <div className="space-y-2">
-    //     {todos.map(todo => (
-    //       <TodoItem
-    //         key={todo.id}
-    //         todo={todo}
-    //         onToggle={handleToggleTodo}
-    //         onDelete={handleDeleteTodo}
-    //       />
-    //     ))}
-    //   </div>
-    // </div>
   );
 }

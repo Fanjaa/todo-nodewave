@@ -16,12 +16,20 @@ export default function AdminPage() {
   const [todos, setTodos] = useState<TodoResponse["content"]["entries"]>([]);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPages] = useState(1);
-  
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [finalSearchQuery, setFinalSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>(""); // state untuk filter status
+
 
   const fetchTodos = async () => {
     try {
+      const filterValue = filterStatus ? `{"isDone": ${filterStatus === "done" ? true : false}}` : "";
       const response = await api.get<TodoResponse>("/todos", {
-        params: { page },
+        params: { 
+          page, 
+          searchFilters: JSON.stringify({ "user.fullName": finalSearchQuery }), // Mengirimkan filter berdasarkan nama
+          filters: filterValue,
+        },
       });
       setTodos(response.data.content.entries);
       setTotalPages(response.data.content.totalPage);
@@ -29,9 +37,10 @@ export default function AdminPage() {
       console.error("Failed to fetch todos:", error);
     }
   };
-
-
   
+  const handleSearch = () => {
+    setFinalSearchQuery(searchQuery); // Update finalSearchQuery saat tombol diklik
+  };
 
   useEffect(() => {
     // Pastikan hanya memanggil fetchTodos setelah login selesai dan role sesuai
@@ -46,14 +55,97 @@ export default function AdminPage() {
         fetchTodos(); // Hanya fetch data jika sudah login dan role-nya Admin
       }
     }
-  }, [isAuthenticated, loading, role, page, router]);
+  }, [isAuthenticated, loading, role, page, router, searchQuery, finalSearchQuery, filterStatus]); // Menggunakan dependensi yang diperlukan
 
   // Menangani kondisi loading dan autentikasi
   if (loading || !isAuthenticated || role !== "ADMIN") {
     return null; // Tidak menampilkan apapun sampai autentikasi selesai atau role tidak sesuai
   }
 
+
+
   return (
+
+//     <div className="flex h-screen">
+//     <aside className="w-64 bg-white shadow-md">
+//         <div className="p-4">
+//             <h1 className="text-xl font-semibold">Nodewave</h1>
+//         </div>
+//         <nav className="mt-4">
+//             <a href="#" className="flex items-center p-4 text-gray-700 bg-gray-100">
+//                 <i className="fas fa-home mr-2"></i>
+//                 To do
+//             </a>
+//         </nav>
+//     </aside>
+//     <main className="flex-1 p-6">
+//         <header className="flex justify-between items-center mb-6">
+//             <h2 className="text-2xl font-semibold">To Do</h2>
+//             <div className="flex items-center">
+//                 <span className="mr-2">Ahmad Akbar</span>
+//                 <img src="https://placehold.co/40x40" alt="User avatar" className="rounded-full"/>
+//             </div>
+//         </header>
+//         <section className="bg-white p-6 rounded-lg shadow-md">
+//             <div className="flex items-center mb-4">
+//                 <div className="relative flex-1">
+//                     <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+//                     <input type="text" placeholder="Search" className="pl-10 pr-4 py-2 border rounded-lg w-full"/>
+//                 </div>
+//                 <button className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg">Search</button>
+//                 <div className="ml-4 relative">
+//                     <button className="px-4 py-2 border rounded-lg flex items-center">
+//                         Filter by Status
+//                         <i className="fas fa-chevron-down ml-2"></i>
+//                     </button>
+//                 </div>
+//             </div>
+//             <table className="w-full text-left">
+//                 <thead>
+//                     <tr>
+//                         <th className="py-2">Name</th>
+//                         <th className="py-2">To do</th>
+//                         <th className="py-2">Statue</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>
+//                     <tr>
+//                         <td className="py-2">Ahmad Akbar</td>
+//                         <td className="py-2">This</td>
+//                         <td className="py-2">
+//                             <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full">Success</span>
+//                         </td>
+//                     </tr>
+//                     <tr>
+//                         <td className="py-2">Ahmad Akbar</td>
+//                         <td className="py-2">Hello</td>
+//                         <td className="py-2">
+//                             <span className="px-2 py-1 bg-red-200 text-red-800 rounded-full">Pending</span>
+//                         </td>
+//                     </tr>
+//                     <tr>
+//                         <td className="py-2">Ahmad Akbar</td>
+//                         <td className="py-2">Good</td>
+//                         <td className="py-2">
+//                             <span className="px-2 py-1 bg-green-200 text-green-800 rounded-full">Success</span>
+//                         </td>
+//                     </tr>
+//                 </tbody>
+//             </table>
+//             <div className="flex justify-end mt-4">
+//                 <button className="px-3 py-1 border rounded-lg">
+//                     <i className="fas fa-chevron-left"></i>
+//                 </button>
+//                 <button className="px-3 py-1 border rounded-lg mx-1">1</button>
+//                 <button className="px-3 py-1 bg-blue-600 text-white rounded-lg">2</button>
+//                 <button className="px-3 py-1 border rounded-lg ml-1">
+//                     <i className="fas fa-chevron-right"></i>
+//                 </button>
+//             </div>
+//         </section>
+//     </main>
+// </div>
+
     <div className="flex h-screen">
       <Sidebar />
       <main className="flex-1 p-6">
@@ -61,20 +153,31 @@ export default function AdminPage() {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex items-center mb-4">
             <div className="relative w-full max-w-xs mr-4">
-              <input
+            <input
                 type="text"
-                placeholder="Search"
+                placeholder="Search by Name"
                 className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={searchQuery || ""}
+                onChange={(e) => setSearchQuery(e.target.value)} // Update search query
               />
               <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              onClick={handleSearch} // Panggil fetchTodos ketika tombol search diklik
+            >
               Search
             </button>
             <div className="relative ml-4">
-              <button className="flex items-center px-4 py-2 border rounded-md">
-                Filter by Status <i className="fas fa-chevron-down ml-2"></i>
-              </button>
+            <select
+                className="px-4 py-2 border rounded-md"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)} // Update status filter
+              >
+                <option value="">Filter by Status</option>
+                <option value="done">Done</option>
+                <option value="pending">Pending</option>
+              </select>
             </div>
           </div>
           <table className="w-full text-left">
@@ -138,70 +241,6 @@ export default function AdminPage() {
 
         </div>
       </main>
-    </div>
-
-    // <div className="min-h-screen bg-gray-50 py-8">
-    //   <div className="max-w-6xl mx-auto px-4">
-    //     <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-    //     <div className="bg-white rounded-lg shadow overflow-hidden">
-    //       <table className="min-w-full divide-y divide-gray-200">
-    //         <thead className="bg-gray-50">
-    //           <tr>
-    //             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //               Name
-    //             </th>
-    //             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //               Todo
-    //             </th>
-    //             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //               Status
-    //             </th>
-    //             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //               Created At
-    //             </th>
-    //           </tr>
-    //         </thead>
-    //         <tbody className="bg-white divide-y divide-gray-200">
-    //           {todos.map((todo) => (
-    //             <tr key={todo.id}>
-    //               <td className="px-6 py-4 whitespace-nowrap">
-    //                 {todo.user.fullName}
-    //               </td>
-    //               <td className="px-6 py-4">{todo.item}</td>
-    //               <td className="px-6 py-4 whitespace-nowrap">
-    //                 <span
-    //                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-    //                     todo.isDone
-    //                       ? 'bg-green-100 text-green-800'
-    //                       : 'bg-yellow-100 text-yellow-800'
-    //                   }`}
-    //                 >
-    //                   {todo.isDone ? 'Done' : 'Pending'}
-    //                 </span>
-    //               </td>
-    //               <td className="px-6 py-4 whitespace-nowrap">
-    //                 {new Date(todo.createdAt).toLocaleDateString()}
-    //               </td>
-    //             </tr>
-    //           ))}
-    //         </tbody>
-    //       </table>
-    //     </div>
-    //     <div className="mt-4 flex justify-center space-x-2">
-    //       <Button
-    //         onClick={() => setPage((p) => Math.max(1, p - 1))}
-    //         disabled={page === 1}
-    //       >
-    //         Previous
-    //       </Button>
-    //       <Button
-    //         onClick={() => setPage((p) => Math.min(totalPage, p + 1))}
-    //         disabled={page === totalPage}
-    //       >
-    //         Next
-    //       </Button>
-    //     </div>
-    //   </div>
-    // </div>
+     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
 import TodoList from "@/components/todo/TodoList";
+import Navbar from "@/components/navbar/Navbar";
 
 export default function TodoPage() {
   const router = useRouter();
@@ -24,8 +25,10 @@ export default function TodoPage() {
   }
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md mx-auto">
+    
+    <div className="bg-gray-100 flex h-screen">
+      <Navbar />
+      <div className="w-full max-w-md mx-auto pt-16 items-center justify-center min-h-screen">
         <header className="flex justify-between items-center py-4 px-6 bg-white shadow-md rounded-t-lg">
           <div className="text-gray-500">
             <i className="fas fa-star"></i>
@@ -51,18 +54,4 @@ export default function TodoPage() {
       </div>
     </div>
   );
-}
-
-    // <div className="min-h-screen bg-gray-50 py-8">
-    //   <div className="max-w-4xl mx-auto px-4">
-    //     <div className="flex justify-between items-center mb-8">
-    //       <h1 className="text-3xl font-bold">Todo List</h1>
-    //       <Button variant="secondary" onClick={logout}>
-    //         Logout
-    //       </Button>
-    //     </div>
-    //     <TodoList />
-    //   </div>
-    // </div>
-//   );
-// }
+};

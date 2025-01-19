@@ -12,9 +12,9 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
-    password: ''
+    fullName: '',
+    password: ''  
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,9 +24,9 @@ export default function RegisterForm() {
 
     try {
       await register(formData);
-      router.push('/todo');
+      router.push('/login');
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Registration failed');
+      setError(error.response?.data?.errors || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -41,8 +41,8 @@ export default function RegisterForm() {
       )}
       <Input
         label="Name"
-        value={formData.name}
-        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+        value={formData.fullName}
+        onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
         required
       />
       <Input
