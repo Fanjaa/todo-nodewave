@@ -2,8 +2,26 @@
 
 import Link from 'next/link';
 import LoginForm from '@/components/auth/LoginForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const { isAuthenticated, loading, role } = useAuth();
+  const router = useRouter();
+
+  // Redirect to /todo if the user is already authenticated
+  useEffect(() => {
+    if (isAuthenticated && role === 'USER') {
+      router.push('/todo');  // Redirect to /todo or another page if the user is already logged in
+    }else if (isAuthenticated && role === 'ADMIN') {
+      router.push('/admin');  // Redirect to /admin or another page if the user is already
+    }
+  }, [isAuthenticated, router]);
+
+  if (loading || isAuthenticated) return null;  // Jangan render dulu
+
+
   return (
 
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">

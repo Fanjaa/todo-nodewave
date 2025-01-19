@@ -7,17 +7,20 @@ import TodoList from "@/components/todo/TodoList";
 
 export default function TodoPage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, role } = useAuth();
 
-  // Pastikan redirect terjadi setelah autentikasi selesai tanpa loading UI
   useEffect(() => {
-    if (!loading && !isAuthenticated) {  // Pastikan tidak ada loading dan autentikasi salah
-      router.push("/login");  // Redirect ke login page
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.push('/login');
+      } else if (role !== 'USER') { // Atur role yang diizinkan untuk halaman ini
+        router.push('/'); // Redirect ke halaman tidak diizinkan
+      }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, role, router]);
 
-  if (loading) {
-    return null; // Render nothing saat loading, tidak ada loading UI yang ditampilkan
+  if (loading || !isAuthenticated || role !== 'USER') {
+    return null;  // Halaman ini hanya akan ditampilkan jika role adalah 'USER'
   }
 
   return (

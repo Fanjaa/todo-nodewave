@@ -10,10 +10,10 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();  // Menggunakan loading untuk memeriksa status autentikasi
+  const { isAuthenticated, loading, role } = useAuth();  // Menggunakan loading untuk memeriksa status autentikasi
   const [todos, setTodos] = useState<TodoResponse['content']['entries']>([]);
   const [page, setPage] = useState(1);
-  const [totalPage, setTotalPages] = useState(1);
+  const [totalPage, setTotalPages] = useState(1); 
 
   const fetchTodos = async () => {
     try {
@@ -26,17 +26,22 @@ export default function AdminPage() {
       console.error('Failed to fetch todos:', error);
     }
   };
-
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push('/login');
-      return;
+    // Pastikan hanya memanggil fetchTodos setelah login selesai dan role sesuai
+    if (!loading) {  // Periksa apakah loading autentikasi selesai
+      if (!isAuthenticated) {
+        router.push('/login');  // Redirect ke halaman login jika belum login
+      } else if (role !== 'ADMIN') {  // Periksa role, hanya izinkan ADMIN yang bisa akses
+        router.push('/');  // Redirect ke halaman lain jika bukan Admin
+      } else {
+        fetchTodos();  // Hanya fetch data jika sudah login dan role-nya Admin
+      }
     }
-    fetchTodos();
-  }, [isAuthenticated, loading, page, router]);
+  }, [isAuthenticated, loading, role, page, router]);
 
-  if (loading || !isAuthenticated) {
-    return null;  // Tidak menampilkan apapun sampai autentikasi selesai
+  // Menangani kondisi loading dan autentikasi
+  if (loading || !isAuthenticated || role !== 'ADMIN') {
+    return null;  // Tidak menampilkan apapun sampai autentikasi selesai atau role tidak sesuai
   }
 
   return (
