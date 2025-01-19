@@ -4,7 +4,13 @@ export interface Todo {
     isDone: boolean;
     createdAt: string;
     updatedAt: string;
-    userId: string;
+    user: User;
+  }
+
+  interface User {
+    id: string;
+    email: string;
+    fullName: string;
   }
   
 export interface TodoResponse {
