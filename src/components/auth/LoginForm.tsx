@@ -25,8 +25,13 @@ export default function LoginForm() {
       await login(formData);
       router.push("/todo");
     } catch (error: any) {
-      setError(error.response?.data?.message || "Login failed");
-    } finally {
+      const errorMessage =
+      Array.isArray(error.response?.data?.errors) && error.response?.data?.errors.length === 0
+        ? error.response?.data?.message || "Login failed"
+        : error.response?.data?.errors || "Login failed";
+  
+    setError(errorMessage);
+      } finally {
       setIsLoading(false);
     }
   };
@@ -55,7 +60,6 @@ export default function LoginForm() {
             },
             '& .MuiOutlinedInput-root': {
               borderRadius: "10px", // Set border radius
-              color: '#50B5FF',
               '& fieldset': {
                 borderColor: '#e0e0e0', // Warna border default
               },
@@ -112,7 +116,7 @@ export default function LoginForm() {
 
       <div className="flex items-center justify-between mb-4">
         <label className="flex items-center text-gray-700">
-          <input className="peer form-checkbox accent-blue" type="checkbox" />
+          <input id="checkbox" className="appearance-none w-4 h-4 bg-gray-200 rounded-sm checked:bg-blue cursor-pointer relative checkbox-white" type="checkbox" style={{'--checkmark-size': '15px', '--stroke-color': '#ffffff'}as React.CSSProperties} />
           <span className="ml-2 text-[14px] text-[#696974]">Remember Me</span>
         </label>
         <a className="text-blue text-[14px]" href="#">
@@ -129,29 +133,6 @@ export default function LoginForm() {
       </Button>
     </form>
 
-    // <form onSubmit={handleSubmit} className="space-y-4">
-    //   {error && (
-    //     <div className="p-3 bg-red-100 text-red-700 rounded-lg">
-    //       {error}
-    //     </div>
-    //   )}
-    //   <Input
-    //     label="Email"
-    //     type="email"
-    //     value={formData.email}
-    //     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-    //     required
-    //   />
-    //   <Input
-    //     label="Password"
-    //     type="password"
-    //     value={formData.password}
-    //     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-    //     required
-    //   />
-    //   <Button type="submit" isLoading={isLoading} className="w-full">
-    //     Login
-    //   </Button>
-    // </form>
+   
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { LoginCredentials, RegisterCredentials } from '../types/auth';
+import { LoginCredentials } from '../types/auth';
 import api from '../lib/axios'
 
 
@@ -12,7 +12,7 @@ interface AuthContextType {
   fullName: string | null;
   role: string | null;  // Menambahkan role
   login: (credentials: LoginCredentials) => Promise<void>;
-  register: (credentials: RegisterCredentials) => Promise<void>;
+  // register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
 }
 
@@ -64,27 +64,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Login Successful! Role:', role);  // Verifikasi role yang didapat
 
     } catch (error) {
-      console.error("Login failed:", error);
       throw error;
     }
   };
 
-  const register = async (credentials: RegisterCredentials) => {
-    try {
-      const response = await api.post('/register', credentials);
-      const { token, user } = response.data.content;
-      const { fullName, role } = user;       
-      localStorage.setItem('token', token);
-      localStorage.setItem('fullName', fullName); 
-      localStorage.setItem('role', role); 
-      setIsAuthenticated(true);
-      setRole(role);
-      setFullName(fullName);
-      api.defaults.headers['Authorization'] = `Bearer ${token}`; // Set Authorization header
-    } catch (error) {
-      throw error;
-    }
-  };
+  // const register = async (credentials: RegisterCredentials) => {
+  //   try {
+  //     const response = await api.post('/register', credentials);
+  //     const { token, user } = response.data.content;
+  //     const { fullName, role } = user;       
+  //     localStorage.setItem('token', token);
+  //     localStorage.setItem('fullName', fullName); 
+  //     localStorage.setItem('role', role); 
+  //     setIsAuthenticated(true);
+  //     setRole(role);
+  //     setFullName(fullName);
+  //     api.defaults.headers['Authorization'] = `Bearer ${token}`; // Set Authorization header
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -96,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, fullName, role, login, register, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, fullName, role, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

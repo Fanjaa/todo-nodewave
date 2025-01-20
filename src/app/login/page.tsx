@@ -38,9 +38,9 @@ export default function LoginPage() {
     </div>
     <p className="mt-4 text-blueButton font-roboto font-medium text-[14px]">
       Already have a Square account? 
-      <a className="text-blue-600 ml-1" href="#">
-          Log in
-      </a>
+      <Link href="/register" className="text-blueCustom ml-1 hover:text-blueButton">
+             Register
+         </Link>
     </p>
   </div>
 </div>
