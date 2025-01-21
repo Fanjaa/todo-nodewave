@@ -4,7 +4,8 @@
 
 Proyek ini adalah aplikasi manajemen tugas (Todo App) yang dibuat menggunakan teknologi Next.js, TypeScript, TailwindCSS, Material-UI, dan Axios. Aplikasi memiliki fitur autentikasi pengguna, manajemen tugas (Todo List), serta peran pengguna (USER & ADMIN).
 
-Proyek ini disiapkan untuk memenuhi **kebutuhan Assessment dari Nodewave**, dengan struktur yang modular, kode yang mudah dibaca, dan dokumentasi yang jelas.
+- Proyek ini disiapkan untuk memenuhi **kebutuhan Assessment dari Nodewave**.
+- URL Aplikasi: https://todo-nodewave-sigma.vercel.app
 
 ## 2. Struktur Proyek
 
