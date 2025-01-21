@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dokumentasi Proyek Todo App
 
-## Getting Started
+## 1. Pendahuluan
 
-First, run the development server:
+Proyek ini adalah aplikasi manajemen tugas (Todo App) yang dibuat menggunakan teknologi Next.js, TypeScript, TailwindCSS, Material-UI, dan Axios. Aplikasi memiliki fitur autentikasi pengguna, manajemen tugas (Todo List), serta peran pengguna (USER & ADMIN).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Proyek ini disiapkan untuk memenuhi **kebutuhan Assessment dari Nodewave**, dengan struktur yang modular, kode yang mudah dibaca, dan dokumentasi yang jelas.
+
+## 2. Struktur Proyek
+
+Berikut adalah struktur utama proyek:
+
+```
+├── README.md                # Dokumentasi proyek
+├── eslint.config.mjs        # Konfigurasi ESLint
+├── next.config.ts           # Konfigurasi Next.js
+├── package.json             # Dependensi proyek
+├── postcss.config.mjs       # Konfigurasi PostCSS
+├── tailwind.config.ts       # Konfigurasi TailwindCSS
+├── tsconfig.json            # Konfigurasi TypeScript
+├── public/                  # File statis (gambar)
+└── src/                     # Semua kode sumber
+    ├── app/                 # Aplikasi utama, termasuk halaman
+    │   ├── globals.css      # style global
+    │   ├── layout.tsx       # Layout aplikasi
+    │   ├── page.tsx         # Halaman utama
+    │   ├── admin/           # Halaman admin
+    │   │   └── page.tsx
+    │   ├── login/           # Halaman login
+    │   │   └── page.tsx
+    │   ├── register/        # Halaman registrasi
+    │   │   └── page.tsx
+    │   └── todo/            # Halaman todo
+    │       └── page.tsx
+    ├── components/          # Komponen 
+    │   ├── auth/            # Komponen untuk autentikasi
+    │   │   ├── LoginForm.tsx
+    │   │   └── RegisterForm.tsx
+    │   ├── navbar/          # Komponen navbar
+    │   │   └── Navbar.tsx
+    │   ├── sidebar/         # Komponen sidebar
+    │   │   └── Sidebar.tsx
+    │   ├── todo/            # Komponen untuk daftar tugas
+    │   │   └── TodoList.tsx
+    │   └── ui/              # Komponen UI umum
+    │       ├── Button.tsx
+    │       └── Input.tsx
+    ├── contexts/            # Contexts untuk aplikasi
+    │   └── AuthContext.tsx
+    ├── lib/                 # Utility, konfigurasi Axios
+    │   └── axios.ts
+    ├── styles/              # Custom styles
+    │   └── inputStyles.ts
+    └── types/               # Definisi tipe TypeScript
+        ├── auth.ts
+        └── todo.ts
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 3. Instalasi
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone repository:
+    
+    ```
+    git clone https://github.com/Fanjaa/todo-nodewave
+    
+    ```
+    
+2. Masuk ke direktori proyek:
+    
+    ```
+    cd todo-nodewave
+    
+    ```
+    
+3. Instal dependensi:
+    
+    ```
+    npm install
+    
+    ```
+    
+4. Jalankan aplikasi:
+    
+    ```
+    npm run dev
+    
+    ```
+    
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 4. Autentikasi
 
-## Learn More
+### AuthContext
 
-To learn more about Next.js, take a look at the following resources:
+Terdapat konteks autentikasi di dalam file `context/AuthContext.tsx` yang menyediakan fungsi:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `login(credentials: LoginCredentials): Promise<void>`
+- `logout(): void`
+- State:
+    - `isAuthenticated: boolean`
+    - `loading: boolean`
+    - `fullName: string | null`
+    - `role: string | null`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Penggunaan:
 
-## Deploy on Vercel
+```tsx
+const { login, logout, isAuthenticated } = useAuth();
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 5. Komponen
+
+### `Sidebar.tsx`
+
+Komponen sidebar dengan properti:
+
+- `isOpen: boolean`
+- `toggleSidebar(): void`
+
+```tsx
+<Sidebar isOpen={true} toggleSidebar={handleToggle} />
+
+```
+
+## 6. API Service
+
+Terdapat konfigurasi Axios di dalam file `lib/axios.ts` untuk memudahkan komunikasi dengan backend:
+
+```
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+```
+
+Fungsi untuk mengambil daftar tugas:
+
+```
+const response = await api.get<TodoResponse>('/todos');
+
+```
+
+## 7. Halaman
+
+### `Login/Page.tsx`
+
+Halaman login akan mengarahkan pengguna yang sudah terautentikasi ke halaman todo atau admin berdasarkan peran.
+
+```tsx
+useEffect(() => {
+  if (isAuthenticated && role === "USER") {
+    router.push("/todo");
+  } else if (isAuthenticated && role === "ADMIN") {
+    router.push("/admin");
+  }
+}, [isAuthenticated, router]);
+
+```
+
+### `Todo/Page.tsx`
+
+Halaman todo hanya dapat diakses oleh pengguna dengan peran USER, jika tidak maka akan diarahkan ke halaman login.
+
+## 8. Custom Styles
+
+Custom styles menggunakan Material-UI disimpan di dalam file `styles/customStyles.ts`:
+
+```
+export const inputStyle = {
+  '& .MuiFormLabel-asterisk': { display: 'none' },
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '10px',
+    '& fieldset': { borderColor: '#e0e0e0' },
+    '&:hover fieldset': { borderColor: '#bdbdbd' },
+    '&.Mui-focused fieldset': { borderWidth: '1px', borderColor: '#50B5FF' },
+  },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#50B5FF' },
+};
+
+```
+
+Penggunaan:
+
+```tsx
+<TextField sx={inputStyle} label="Email" variant="outlined" />
+
+```
+
+## Project tasks
+
+[Tasks](https://www.notion.so/18240bce1b3881d68a1dcac05f43ffa6?pvs=21)
