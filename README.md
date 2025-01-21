@@ -1,4 +1,4 @@
-# Dokumentasi Proyek Todo App
+# Dokumentasi Proyek Nodewave Todo App
 
 ## 1. Pendahuluan
 
@@ -187,7 +187,3 @@ Penggunaan:
 <TextField sx={inputStyle} label="Email" variant="outlined" />
 
 ```
-
-## Project tasks
-
-[Tasks](https://www.notion.so/18240bce1b3881d68a1dcac05f43ffa6?pvs=21)
