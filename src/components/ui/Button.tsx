@@ -9,8 +9,8 @@ export default function Button({
   children,
   variant = 'primary',
   isLoading = false,
-  className = '',
-  ...props
+  className = '',  // Default className sebagai string kosong jika tidak diberikan
+  ...props  // Spread operator untuk menangkap semua properti input standar lainnya
 }: ButtonProps) {
   const baseStyles = 'px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50';
   const variantStyles = {

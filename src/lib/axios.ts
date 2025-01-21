@@ -1,13 +1,14 @@
 import axios from 'axios';
 
+// Membuat instance axios dengan baseURL dari environment variable
 const api = axios.create({
-  baseURL: 'https://fe-test-api.nwappservice.com',
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add interceptor for auth token
+// Menambahkan token otentikasi ke header request
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');

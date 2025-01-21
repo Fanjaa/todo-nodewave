@@ -1,68 +1,70 @@
 import React, { useEffect, useState } from "react";
-import TodoItem from "./TodoItem";
-import TodoForm from "./TodoForm";
-import Button from "../ui/Button";
 import { Todo, TodoResponse } from "../../types/todo";
 import api from "../../lib/axios";
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [todos, setTodos] = useState<Todo[]>([]);  // State untuk menyimpan daftar todo
+  const [isLoading, setIsLoading] = useState(true);  // State untuk menangani status loading
+  const [error, setError] = useState("");  // State untuk menangani pesan error
 
+  // Fungsi untuk mengambil data todo dari API
   const fetchTodos = async () => {
     try {
       const response = await api.get<TodoResponse>("/todos");
-      setTodos(response.data.content.entries);
+      setTodos(response.data.content.entries); // Menyimpan todos dari response API
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to fetch todos");
+      setError(error.response?.data?.message || "Failed to fetch todos"); // Menangani error jika gagal mengambil data
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Fungsi untuk menambahkan todo baru
   const handleAddTodo = async (item: string) => {
     try {
       const response = await api.post<{ content: Todo }>("/todos", { item });
-      setTodos((prev) => [...prev, response.data.content]);
+      setTodos((prev) => [...prev, response.data.content]);  // Menambahkan todo baru ke daftar
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to add todo");
+      setError(error.response?.data?.message || "Failed to add todo"); // Menangani error jika gagal menambah todo
     }
   };
 
+  // Fungsi untuk toggle status todo
   const handleToggleTodo = async (id: string) => {
     try {
       const currentTodo = todos.find((todo) => todo.id === id);
-      const body = { action: currentTodo?.isDone ? "UNDONE" : "DONE" };
-      const token = localStorage.getItem("token");
+      const body = { action: currentTodo?.isDone ? "UNDONE" : "DONE" };  // Menentukan aksi berdasarkan status saat ini
+      const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
       if (!token) {
-        throw new Error("Authorization token is missing");
+        throw new Error("Authorization token is missing"); // Jika token tidak ada, lempar error
       }
 
       await api.put(`/todos/${id}/mark`, body, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }, // Kirim token di headers
       });
 
       setTodos((prev) =>
         prev.map((todo) =>
-          todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+          todo.id === id ? { ...todo, isDone: !todo.isDone } : todo // Update status todo yang diuba
         )
       );
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to toggle todo");
+      setError(error.response?.data?.message || "Failed to toggle todo"); // Menangani error jika gagal toggle
     }
   };
 
+  // Fungsi untuk menghapus todo
   const handleDeleteTodo = async (id: string) => {
     try {
-      await api.delete(`/todos/${id}`);
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      await api.delete(`/todos/${id}`); // Hapus todo dari API
+      setTodos((prev) => prev.filter((todo) => todo.id !== id)); // Hapus todo dari state
     } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to delete todo");
+      setError(error.response?.data?.message || "Failed to delete todo"); // Menangani error jika gagal menghapus
     }
   };
 
+  // Ambil data todos saat komponen pertama kali dimuat
   useEffect(() => {
     fetchTodos();
   }, []);

@@ -13,16 +13,16 @@ export default function TodoPage() {
   useEffect(() => {
     if (!loading) {
       if (!isAuthenticated) {
-        router.push("/login");
+        router.push("/login"); // Redirect ke halaman login jika belum login
       } else if (role !== "USER") {
-        // Atur role yang diizinkan untuk halaman ini
+        // Jika pengguna tidak memiliki role 'USER', arahkan ke halaman lain
         router.push("/"); // Redirect ke halaman tidak diizinkan
       }
     }
-  }, [isAuthenticated, loading, role, router]);
+  }, [isAuthenticated, loading, role, router]); // Dependensi memastikan efek dijalankan saat nilai berubah
 
   if (loading || !isAuthenticated || role !== "USER") {
-    return null; // Halaman ini hanya akan ditampilkan jika role adalah 'USER'
+    return null; // Jangan tampilkan apapun sebelum autentikasi selesai atau role tidak sesuai
   }
 
   return (

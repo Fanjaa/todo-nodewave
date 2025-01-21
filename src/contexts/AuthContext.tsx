@@ -1,31 +1,21 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { LoginCredentials } from '../types/auth';
+import { LoginCredentials, AuthContextType } from '../types/auth';
 import api from '../lib/axios'
 
 
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  loading: boolean;
-  fullName: string | null;
-  role: string | null;  // Menambahkan role
-  login: (credentials: LoginCredentials) => Promise<void>;
-  // register: (credentials: RegisterCredentials) => Promise<void>;
-  logout: () => void;
-}
-
+// Membuat context Auth
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+// AuthProvider untuk membungkus komponen dan memberikan state autentikasi ke aplikasi
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); 
   const [role, setRole] = useState<string | null>(null); // Menyimpan role
   const [fullName, setFullName] = useState<string | null>(null); // Menyimpan role
 
-  
-
+  // Mengecek token di localStorage untuk memastikan apakah sudah login
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role'); // Ambil role dari localStorage
@@ -33,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     console.log('Token di localStorage:', token); // Debugging log token
     if (token) {
+      // Jika token ada, set status autentikasi menjadi true dan ambil data pengguna
       setIsAuthenticated(true);
       setRole(storedRole);
       setFullName(storedFullName)
@@ -46,14 +37,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
  
   const login = async (credentials: LoginCredentials) => {
     try {
-      const response = await api.post('/login', credentials);
-      console.log(response.data); // Log data respons untuk melihat apakah content ada
-
+      const response = await api.post('/login', credentials); // Memanggil API untuk login
       const { token, user } = response.data.content;
       const { fullName, role } = user; 
-      console.log(fullName)
 
-      
+      // Menyimpan data pengguna dan token di localStorage
       localStorage.setItem('token', token);
       localStorage.setItem('fullName', fullName); 
       localStorage.setItem('role', role); 
@@ -62,30 +50,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setFullName(fullName);
       api.defaults.headers['Authorization'] = `Bearer ${token}`; // Set Authorization header
           console.log('Login Successful! Role:', role);  // Verifikasi role yang didapat
-
     } catch (error) {
       throw error;
     }
   };
 
-  // const register = async (credentials: RegisterCredentials) => {
-  //   try {
-  //     const response = await api.post('/register', credentials);
-  //     const { token, user } = response.data.content;
-  //     const { fullName, role } = user;       
-  //     localStorage.setItem('token', token);
-  //     localStorage.setItem('fullName', fullName); 
-  //     localStorage.setItem('role', role); 
-  //     setIsAuthenticated(true);
-  //     setRole(role);
-  //     setFullName(fullName);
-  //     api.defaults.headers['Authorization'] = `Bearer ${token}`; // Set Authorization header
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
   const logout = () => {
+    // Menghapus data autentikasi dari localStorage dan set status logout
     localStorage.removeItem('token');
     localStorage.removeItem('fullName');
     localStorage.removeItem('role');
@@ -95,10 +66,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
+    // Menyediakan nilai autentikasi kepada komponen children
+
     <AuthContext.Provider value={{ isAuthenticated, loading, fullName, role, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Hook untuk mengakses AuthContext
 export const useAuth = () => useContext(AuthContext);

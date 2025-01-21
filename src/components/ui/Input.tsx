@@ -8,14 +8,14 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export default function Input({
   label,
   error,
-  className = '',
-  ...props
+  className = '',  // Default className sebagai string kosong jika tidak diberikan
+  ...props  // Spread operator untuk menangkap semua properti input standar lainnya
 }: InputProps) {
   return (
     <div className="w-full">
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label}
+          {label}  {/* Menampilkan label jika tersedia */}
         </label>
       )}
       <input

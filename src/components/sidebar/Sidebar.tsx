@@ -1,11 +1,6 @@
 import React from "react";
 
-interface SidebarProps {
-  isOpen: boolean;
-  toggleSidebar: () => void;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+function Sidebar({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   return (
     <aside
       className={`fixed left-0 top-0 h-screen bg-white border-r transition-all duration-300 z-30 ${
@@ -79,7 +74,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           </svg>
           {isOpen && <span>Todo</span>}
         </div>
-        {/* Tambahkan menu item lainnya sesuai kebutuhan */}
       </div>
     </aside>
   );

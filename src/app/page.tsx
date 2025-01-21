@@ -16,7 +16,7 @@ export default function Home() {
       // Jika role adalah 'ADMIN', arahkan ke halaman admin
       if (role === 'ADMIN') {
         router.push('/admin');
-      }
+      } 
       // Jika role adalah 'USER', arahkan ke halaman user
       else if (role === 'USER') {
         router.push('/todo');

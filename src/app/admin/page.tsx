@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { TodoResponse } from "../../types/todo";
-import Button from "../../components/ui/Button";
 import api from "../../lib/axios";
 import { useAuth } from "../../contexts/AuthContext";
 import Sidebar from "@/components/sidebar/Sidebar";
@@ -14,27 +13,28 @@ export default function AdminPage() {
   const router = useRouter();
   const { isAuthenticated, loading, role } = useAuth(); // Menggunakan loading untuk memeriksa status autentikasi
   const [todos, setTodos] = useState<TodoResponse["content"]["entries"]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPage, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [finalSearchQuery, setFinalSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<string>(""); // state untuk filter status
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [page, setPage] = useState(1); // Menyimpan halaman aktif untuk pagination
+  const [totalPage, setTotalPages] = useState(1); // Menyimpan total halaman dari response API
+  const [searchQuery, setSearchQuery] = useState(""); // Menyimpan query pencarian sebelum dikirim
+  const [finalSearchQuery, setFinalSearchQuery] = useState(""); // Query yang akan dikirim ke API
+  const [filterStatus, setFilterStatus] = useState<string>(""); // Menyimpan status filter untuk menampilkan tugas selesai/belum selesai
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Menyimpan status sidebar apakah terbuka atau tertutup
 
   const fetchTodos = async () => {
     try {
+      // Menentukan nilai filter berdasarkan status todo
       const filterValue = filterStatus
         ? `{"isDone": ${filterStatus === "done" ? true : false}}`
         : "";
       const response = await api.get<TodoResponse>("/todos", {
         params: {
-          page,
+          page, // Mengirim nomor halaman saat request API
           searchFilters: JSON.stringify({ "user.fullName": finalSearchQuery }), // Mengirimkan filter berdasarkan nama
           filters: filterValue,
         },
       });
-      setTodos(response.data.content.entries);
-      setTotalPages(response.data.content.totalPage);
+      setTodos(response.data.content.entries); // Menyimpan daftar todos dari response API
+      setTotalPages(response.data.content.totalPage); // Menyimpan total halaman dari response AP
     } catch (error) {
       console.error("Failed to fetch todos:", error);
     }
@@ -75,13 +75,10 @@ export default function AdminPage() {
         setIsSidebarOpen(false);
       }
     };
-  
     // Panggil function pas pertama kali render
     checkScreenSize();
-  
     // Pasang event listener buat dengerin resize
     window.addEventListener('resize', checkScreenSize);
-  
     // Cleanup pas komponen unmount
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);

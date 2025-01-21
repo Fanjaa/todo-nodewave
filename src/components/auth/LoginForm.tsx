@@ -3,36 +3,41 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import Input from "../ui/Input";
 import Button from "../ui/Button";
 import { TextField } from "@mui/material";
+import inputStyle from "@/styles/inputStyles";
 
 export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // State untuk menyimpan data form (email & password)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  // Fungsi yang dipanggil saat form dikirim
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    e.preventDefault(); // Mencegah reload halaman default pada form submission
+    setIsLoading(true); // Set state loading ke true selama proses login
+    setError(""); // Reset error sebelum mencoba login
 
     try {
-      await login(formData);
-      router.push("/todo");
+      await login(formData); // Mengirim data ke fungsi login dari context
+      router.push("/todo"); // Arahkan ke halaman "/todo" setelah login berhasil
     } catch (error: any) {
+      // Menangani error dari response API
       const errorMessage =
-      Array.isArray(error.response?.data?.errors) && error.response?.data?.errors.length === 0
-        ? error.response?.data?.message || "Login failed"
-        : error.response?.data?.errors || "Login failed";
-  
-    setError(errorMessage);
-      } finally {
-      setIsLoading(false);
+        Array.isArray(error.response?.data?.errors) &&
+        error.response?.data?.errors.length === 0
+          ? error.response?.data?.message || "Login failed"
+          : error.response?.data?.errors || "Login failed";
+      setError(errorMessage); // Set pesan error ke state
+    } finally {
+      setIsLoading(false); // Set loading kembali ke false setelah request selesai
     }
   };
 
@@ -54,27 +59,7 @@ export default function LoginForm() {
           }
           fullWidth
           required
-          sx={{
-            "& .MuiFormLabel-asterisk": {
-              display: "none", // Menyembunyikan bintang
-            },
-            '& .MuiOutlinedInput-root': {
-              borderRadius: "10px", // Set border radius
-              '& fieldset': {
-                borderColor: '#e0e0e0', // Warna border default
-              },
-              '&:hover fieldset': {
-                borderColor: '#bdbdbd', // Warna border saat hover
-              },
-              '&.Mui-focused fieldset': {
-                borderWidth: '1px', // Border saat focus juga tipis
-                borderColor: '#50B5FF', // Ubah ke warna yang diinginkan saat focus (contoh: merah)
-              },
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: '#50B5FF'
-            },
-          }}
+          sx={inputStyle}
         />
       </div>
 
@@ -90,33 +75,23 @@ export default function LoginForm() {
             setFormData((prev) => ({ ...prev, password: e.target.value }))
           }
           required
-          sx={{
-            "& .MuiFormLabel-asterisk": {
-              display: "none", // Menyembunyikan bintang
-            },
-            '& .MuiOutlinedInput-root': {
-              borderRadius: "10px", // Set border radius
-              '& fieldset': {
-                borderColor: '#e0e0e0', // Warna border default
-              },
-              '&:hover fieldset': {
-                borderColor: '#bdbdbd', // Warna border saat hover
-              },
-              '&.Mui-focused fieldset': {
-                borderWidth: '1px', // Border saat focus juga tipis
-                borderColor: '#50B5FF', // Ubah ke warna yang diinginkan saat focus (contoh: merah)
-              },
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: '#50B5FF',
-            },
-          }}
+          sx={inputStyle}
         />
       </div>
 
       <div className="flex items-center justify-between mb-4">
         <label className="flex items-center text-gray-700">
-          <input id="checkbox" className="appearance-none w-4 h-4 bg-gray-200 rounded-sm checked:bg-blue cursor-pointer relative checkbox-white" type="checkbox" style={{'--checkmark-size': '15px', '--stroke-color': '#ffffff'}as React.CSSProperties} />
+          <input
+            id="checkbox"
+            className="appearance-none w-4 h-4 bg-gray-200 rounded-sm checked:bg-blue cursor-pointer relative checkbox-white"
+            type="checkbox"
+            style={
+              {
+                "--checkmark-size": "15px",
+                "--stroke-color": "#ffffff",
+              } as React.CSSProperties
+            }
+          />
           <span className="ml-2 text-[14px] text-[#696974]">Remember Me</span>
         </label>
         <a className="text-blue text-[14px]" href="#">
@@ -132,7 +107,5 @@ export default function LoginForm() {
         Login
       </Button>
     </form>
-
-   
   );
 }
