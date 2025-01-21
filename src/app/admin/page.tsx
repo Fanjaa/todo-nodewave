@@ -68,13 +68,31 @@ export default function AdminPage() {
     filterStatus,
   ]); // Menggunakan dependensi yang diperlukan
 
+  useEffect(() => {
+    // Function buat cek ukuran layar
+    const checkScreenSize = () => {
+      if (window.innerWidth <= 800) {
+        setIsSidebarOpen(false);
+      }
+    };
+  
+    // Panggil function pas pertama kali render
+    checkScreenSize();
+  
+    // Pasang event listener buat dengerin resize
+    window.addEventListener('resize', checkScreenSize);
+  
+    // Cleanup pas komponen unmount
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
   // Menangani kondisi loading dan autentikasi
   if (loading || !isAuthenticated || role !== "ADMIN") {
     return null; // Tidak menampilkan apapun sampai autentikasi selesai atau role tidak sesuai
   }
 
   return (
-    <div className="min-h-screen font-inter bg-[#F7F7F9]">
+    <div className="relative min-h-screen font-inter bg-[#F7F7F9]">
       <Sidebar
         isOpen={isSidebarOpen}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -82,19 +100,19 @@ export default function AdminPage() {
 
       <div
         className={`transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-20"
+          isSidebarOpen ? "ml-64 max-md:ml-16 max-sm:ml-0" : "ml-20 max-sm:ml-0"
         }`}
       >
-        <nav className="relative z-10 border-b-2 border-gray-200 px-4 py-2 justify-center items-center pr-16">
+        <nav className="relative z-10 border-b-2 border-gray-200 px-4 bg-white py-2 justify-center items-center pr-16 max-sm:pl-12 max-sm:pr-4">
           <Navbar />
         </nav>
-        <main className="flex-1 p-6">
-          <h1 className="text-[#323232] text-[32px] font-semibold p-8 pt-2">
+        <main className="flex-1 p-6 max-md:p-2">
+          <h1 className="text-[#323232] text-[32px] font-semibold p-8 pt-2 max-sm:text-center">
             Todo Do
           </h1>
-          <div className="bg-white px-8 py-10 rounded-xl">
-            <div className="flex items-center mb-8 ">
-              <div className="relative max-w-xs mr-4">
+          <div className="bg-white px-8 py-10 rounded-xl w-full overflow-x-auto max-sm:px-4 max-sm:py-5">
+            <div className="flex items-center mb-8 max-sm:flex-wrap max-sm:gap-2">
+              <div className="relative flex max-w-xs mr-4 max-sm:mr-0 max-sm:max-w-full">
                 <input
                   type="text"
                   placeholder="Search by Name"
@@ -119,21 +137,21 @@ export default function AdminPage() {
                     />
                   </svg>
                 </div>
-              </div>
               <button
-                className="bg-blueButton text-white px-6 py-2 rounded-lg font-medium hover:bg-blue"
+                className="bg-blueButton text-white px-6 py-2 rounded-lg font-medium hover:bg-blue max-sm:px-4 max-sm:ml-4"
                 onClick={handleSearch} // Panggil fetchTodos ketika tombol search diklik
-              >
+                >
                 Search
               </button>
-              <div className="relative ml-14">
+                </div>
+              <div className="relative ml-14 max-sm:ml-0 max-sm:w-full">
                 <select
-                  className="px-2 py-2 border-b focus:border-blueButton cursor-pointer"
+                  className="px-2 py-2 border-b focus:border-blueButton cursor-pointer max-sm:w-full"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)} // Update status filter
                 >
                   <option value="">Filter by Status</option>
-                  <option value="done">Done</option>
+                  <option value="done">Success</option>
                   <option value="pending">Pending</option>
                 </select>
               </div>
@@ -154,7 +172,7 @@ export default function AdminPage() {
                   >
                     <td className="py-4 pl-2">{todo.user.fullName}</td>
                     <td className="py-4 pl-2">{todo.item}</td>
-                    <td className="py-4 pl-2">
+                    <td className="py-4 pl-2 pr-2">
                       <span
                         className={`px-4 py-2 rounded-full text-base ${
                           todo.isDone

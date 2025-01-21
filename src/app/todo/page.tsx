@@ -26,10 +26,10 @@ export default function TodoPage() {
   }
 
   return (
-    <div className="min-h-screen relative bg-backgroundSecondary border">
+    <div className="min-h-screen relative bg-backgroundSecondary overflow-x-hidden ">
       {/* <div className="relative top-0 left-0 w-full min-h-[50vh] z-0"> */}
       <svg
-        className="absolute top-0 left-0 w-full min-h-[50vh]" // Pastikan lebar dan tinggi SVG menyesuaikan
+        className="absolute top-0 left-0 w-full min-h-[50vh] max-sm:min-h-[25vh]" // Pastikan lebar dan tinggi SVG menyesuaikan
         viewBox="0 0 1600 497"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@ export default function TodoPage() {
       </svg>
       {/* </div> */}
 
-      <nav className="relative z-10 border-b-2 border-gray-200 px-4 py-2 justify-center items-center pr-16">
+      <nav className="relative z-10 border-b-2 border-gray-200 px-4 py-2 justify-center items-center pr-16 bg-white">
         <Navbar />
       </nav>
 

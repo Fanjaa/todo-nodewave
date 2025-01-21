@@ -60,8 +60,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-lg mx-auto bg-white rounded-xl shadow-loginForm overflow-hidden md:max-w-2xl">
         <div className="p-8">
           <form className="space-y-4">
-            <div className="flex space-x-4">
-              <div className="w-1/2">
+            <div className="flex space-x-4 max-sm:flex-wrap max-sm:gap-4 max-sm:space-x-0">
+              <div className="w-1/2 max-sm:w-full">
                 <TextField
                   id="firstName"
                   label="First Name"
@@ -92,7 +92,7 @@ export default function RegisterPage() {
                   }}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="w-1/2 max-sm:w-full">
                 <TextField
                   id="lastName"
                   label="Last Name"
@@ -124,7 +124,8 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 max-sm:flex-wrap max-sm:space-x-0 max-sm:gap-4">
+              <div className="flex gap-4 w-5/12 max-sm:w-full">
               <div className="w-[80px]">
                 <TextField
                   id="countryNumber"
@@ -157,7 +158,7 @@ export default function RegisterPage() {
                   }}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="w-full">
                 <TextField
                   id="phoneNumber"
                   label="Phone Number"
@@ -188,7 +189,8 @@ export default function RegisterPage() {
                   }}
                 />
               </div>
-              <div className="w-2/3">
+              </div>
+              <div className="w-7/12 max-sm:w-full">
                 <FormControl fullWidth variant="outlined"
                                     sx={{
                                         "& .MuiFormLabel-asterisk": {
@@ -267,8 +269,8 @@ export default function RegisterPage() {
                 }}
               />
             </div>
-            <div className="flex space-x-4">
-              <div className="w-1/2 relative">
+            <div className="flex space-x-4 max-sm:flex-wrap max-sm:gap-4 max-sm:space-x-0">
+              <div className="w-1/2 relative max-sm:w-full">
                 <TextField
                   id="password"
                   label="Password"
@@ -314,7 +316,7 @@ export default function RegisterPage() {
                   }}
                 />
               </div>
-              <div className="w-1/2 relative">
+              <div className="w-1/2 relative max-sm:w-full">
                 <TextField
                   id="confirmPassword"
                   label="Confirm Password"

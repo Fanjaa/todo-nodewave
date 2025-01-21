@@ -8,12 +8,12 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-white border-r transition-all duration-300 ${
-        isOpen ? "w-64" : "w-20"
+      className={`fixed left-0 top-0 h-screen bg-white border-r transition-all duration-300 z-30 ${
+        isOpen ? "w-64 max-sm:w-2/5" : "w-20 max-sm:w-10 max-sm:bg-transparent max-sm:border-none"
       }`}
     >
       {/* Logo atau Brand */}
-      <div className={`p-4 flex min-h-16 ${isOpen ? 'justify-between' : 'justify-center'}`}>
+      <div className={`p-4 flex min-h-14 items-center max-sm:min-h-12 max-sm:h-14 ${isOpen ? 'justify-between' : 'justify-center'}`}>
         {isOpen && (
           <h1 className="text-xl font-bold text-[#4C4E64DE]">Nodewave</h1>
         )}
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       <div className="p-2">
         <div
           className={`flex items-center space-x-4 mb-4 py-2 px-4 rounded-lg bg-[#4C4E6414] cursor-pointer ${
-            !isOpen && "justify-center"
+            !isOpen && "justify-center max-sm:hidden"
           }`}
         >
           <svg

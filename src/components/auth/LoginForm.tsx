@@ -125,7 +125,7 @@ export default function LoginForm() {
       </div>
 
       <Button
-        className="w-full bg-blueButton text-fontButton py-2 rounded-[10px] h-[48px]"
+        className="w-full bg-blueButton text-fontButton py-2 rounded-[10px] h-[48px] hover:bg-blueCustom"
         type="submit"
         isLoading={isLoading}
       >

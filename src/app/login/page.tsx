@@ -23,7 +23,7 @@ export default function LoginPage() {
 
 
   return (
-<div className="bg-two-color flex items-center justify-center min-h-screen">
+<div className="bg-two-color flex items-center justify-center min-h-screen max-sm:px-4">
   <div className="text-center">
     <div className="flex flex-col gap-3.5">
     <h1 className="font-bold font-poppins text-[56px] text-[#44444F]">
@@ -33,7 +33,7 @@ export default function LoginPage() {
       Just sign in if you have an account in here. Enjoy our Website
     </p>
     </div>
-    <div className="flex flex-col justify-center bg-white shadow-loginForm rounded-[20px] p-8 mt-6 w-[560px] h-[314px] max-w-lg mx-auto ">
+    <div className="flex flex-col justify-center bg-white shadow-loginForm rounded-[20px] p-8 mt-6 w-[560px] h-[314px] max-w-lg mx-auto max-sm:w-auto ">
       <LoginForm />
     </div>
     <p className="mt-4 text-blueButton font-roboto font-medium text-[14px]">

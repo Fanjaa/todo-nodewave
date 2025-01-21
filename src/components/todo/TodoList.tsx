@@ -74,7 +74,7 @@ export default function TodoList() {
   });
 
   return (
-    <div className="flex flex-col bg-white border-[1px] border-[#B5B5BE] p-12 gap-6 w-[958px] rounded-3xl shadow-todoForm">
+    <div className="flex flex-col bg-white border-[1px] border-[#B5B5BE] p-12 gap-6 w-full min-w-[958px] rounded-3xl shadow-todoForm max-lg:min-w-0">
       <div className="mb-4">
         <label
           className="block mb-2 font-rubik text-[20px] text-[#7D7D7D]"
@@ -82,15 +82,15 @@ export default function TodoList() {
         >
           Add a new task
         </label>
-        <div className="flex gap-8">
+        <div className="flex gap-8 max-sm:flex-col max-sm:gap-2">
           <input
-            className="flex-1 border-b border-gray-300  bg-backgroundPrimary rounded-lg px-4 py-2 font-rubik font-medium text-3xl focus:border-b-2 focus:!border-[#174286] focus:outline-none focus:bg-backgroundPrimary"
+            className="flex-1 border-b border-gray-300  bg-backgroundPrimary rounded-lg px-4 py-2 font-rubik font-medium text-3xl focus:border-b-2 focus:!border-[#174286] focus:outline-none focus:bg-backgroundPrimary border max-sm:w-full"
             id="new-task"
             placeholder="Enter task"
             type="text"
           />
           <button
-            className="bg-blueButton text-white font-rubik text-2xl px-6 py-2 rounded-lg"
+            className="bg-blueButton text-white font-rubik text-2xl px-6 py-2 rounded-lg max-sm:w-full hover:bg-blueCustom"
             onClick={(e) => {
               const input = (e.target as HTMLElement)
                 .previousElementSibling as HTMLInputElement;
@@ -179,7 +179,7 @@ export default function TodoList() {
       </div>
 
       <button
-        className="bg-redButton rounded-lg text-white px-6 py-2 w-[246px] h-[52px] mt-4 font-rubik text-2xl"
+        className="bg-redButton rounded-lg text-white px-6 py-2 w-[246px] min-h-[52px] mt-4 font-rubik text-2xl max-sm:w-full hover:bg-red-500"
         onClick={() => {
           const selectedTodos = todos.filter((todo) => todo.isDone);
           selectedTodos.forEach((todo) => handleDeleteTodo(todo.id));
