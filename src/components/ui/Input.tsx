@@ -8,7 +8,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export default function Input({
   label,
   error,
-  className = '',  // Default className sebagai string kosong jika tidak diberikan
+  className = '', // Default className sebagai string kosong jika tidak diberikan
   ...props  // Spread operator untuk menangkap semua properti input standar lainnya
 }: InputProps) {
   return (
