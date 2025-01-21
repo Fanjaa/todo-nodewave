@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Todo, TodoResponse } from "../../types/todo";
 import api from "../../lib/axios";
+import { AxiosError } from "axios";
 
 export default function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([]);  // State untuk menyimpan daftar todo
-  const [isLoading, setIsLoading] = useState(true);  // State untuk menangani status loading
-  const [error, setError] = useState("");  // State untuk menangani pesan error
+  const [todos, setTodos] = useState<Todo[]>([]); // State untuk menyimpan daftar todo
+  const [isLoading, setIsLoading] = useState(true); // State untuk menangani status loading
+  const [error, setError] = useState(""); // State untuk menangani pesan error
 
   // Fungsi untuk mengambil data todo dari API
   const fetchTodos = async () => {
     try {
       const response = await api.get<TodoResponse>("/todos");
       setTodos(response.data.content.entries); // Menyimpan todos dari response API
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to fetch todos"); // Menangani error jika gagal mengambil data
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message || "Failed to fetch todos");
+      } else {
+        setError("An unknown error occurred");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -23,9 +28,16 @@ export default function TodoList() {
   const handleAddTodo = async (item: string) => {
     try {
       const response = await api.post<{ content: Todo }>("/todos", { item });
-      setTodos((prev) => [...prev, response.data.content]);  // Menambahkan todo baru ke daftar
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to add todo"); // Menangani error jika gagal menambah todo
+      setTodos((prev) => [...prev, response.data.content]); // Tambahkan todo ke daftar
+    } catch (error: unknown) {
+      // Menangani berbagai jenis error
+      if (error instanceof AxiosError) {
+        setError(error.response?.data?.message || "Failed to add todo"); // Error dari API
+      } else if (error instanceof Error) {
+        setError(error.message); // Error umum
+      } else {
+        setError("An unknown error occurred"); // Error tak dikenal
+      }
     }
   };
 
@@ -33,7 +45,7 @@ export default function TodoList() {
   const handleToggleTodo = async (id: string) => {
     try {
       const currentTodo = todos.find((todo) => todo.id === id);
-      const body = { action: currentTodo?.isDone ? "UNDONE" : "DONE" };  // Menentukan aksi berdasarkan status saat ini
+      const body = { action: currentTodo?.isDone ? "UNDONE" : "DONE" }; // Menentukan aksi berdasarkan status saat ini
       const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
       if (!token) {
@@ -45,12 +57,17 @@ export default function TodoList() {
       });
 
       setTodos((prev) =>
-        prev.map((todo) =>
-          todo.id === id ? { ...todo, isDone: !todo.isDone } : todo // Update status todo yang diuba
+        prev.map(
+          (todo) => (todo.id === id ? { ...todo, isDone: !todo.isDone } : todo) // Update status todo yang diuba
         )
       );
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to toggle todo"); // Menangani error jika gagal toggle
+    } catch (error: unknown) {
+      // Menangani error jika terjadi
+      if (error instanceof Error && 'response' in error) {
+        setError((error as { response?: { data?: { message: string } } }).response?.data?.message || "Failed to toggle todo");
+      } else {
+        setError("Failed to toggle todo");
+      }
     }
   };
 
@@ -59,8 +76,15 @@ export default function TodoList() {
     try {
       await api.delete(`/todos/${id}`); // Hapus todo dari API
       setTodos((prev) => prev.filter((todo) => todo.id !== id)); // Hapus todo dari state
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Failed to delete todo"); // Menangani error jika gagal menghapus
+    } catch (error: unknown) {
+      if (error instanceof Error && "response" in error) {
+        setError(
+          (error as { response?: { data?: { message: string } } }).response
+            ?.data?.message || "Failed to delete todo"
+        ); // Menangani error jika gagal menghapus
+      } else {
+        setError("Failed to delete todo");
+      }
     }
   };
 
@@ -115,9 +139,9 @@ export default function TodoList() {
 
         <div className="space-y-2">
           {isLoading ? (
-             <div className="text-center font-rubik text-xl font-medium text-gray-500">
-             Loading Todos...
-           </div>
+            <div className="text-center font-rubik text-xl font-medium text-gray-500">
+              Loading Todos...
+            </div>
           ) : (
             sortedTodos.map((todo) => (
               <div
@@ -131,7 +155,9 @@ export default function TodoList() {
                     checked={todo.isDone}
                     onChange={() => handleToggleTodo(todo.id)}
                     className="appearance-none w-10 h-10  bg-gray-200 rounded-sm checked:bg-[#6DD230] checked:bg-opacity-15 cursor-pointer relative mr-8 checkbox-green"
-                    style={{'--checkmark-size': '32px'}as React.CSSProperties}
+                    style={
+                      { "--checkmark-size": "32px" } as React.CSSProperties
+                    }
                   />
                   <span className="text-gray-700 font-rubik">{todo.item}</span>
                 </div>

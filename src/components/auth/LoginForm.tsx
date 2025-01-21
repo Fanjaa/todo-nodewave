@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Button from "../ui/Button";
 import { TextField } from "@mui/material";
 import inputStyle from "@/styles/inputStyles";
+import { ApiError } from "@/types/auth";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -28,16 +29,22 @@ export default function LoginForm() {
     try {
       await login(formData); // Mengirim data ke fungsi login dari context
       router.push("/todo"); // Arahkan ke halaman "/todo" setelah login berhasil
-    } catch (error: any) {
-      // Menangani error dari response API
+    } catch (err: unknown) {
+      // Type casting error ke ApiError
+      const error = err as ApiError;
+
+      // Menentukan pesan error berdasarkan response yang diterima
       const errorMessage =
         Array.isArray(error.response?.data?.errors) &&
         error.response?.data?.errors.length === 0
           ? error.response?.data?.message || "Login failed"
           : error.response?.data?.errors || "Login failed";
-      setError(errorMessage); // Set pesan error ke state
+
+      // Jika errorMessage berupa array, gabungkan menjadi string
+      // Jika tidak, set errorMessage biasa atau fallback ke "Login failed"
+      setError(Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage || "Login failed");
     } finally {
-      setIsLoading(false); // Set loading kembali ke false setelah request selesai
+      setIsLoading(false);
     }
   };
 

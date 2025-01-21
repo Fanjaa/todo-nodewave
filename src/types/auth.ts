@@ -16,3 +16,13 @@ export interface LoginCredentials {
 export interface AuthResponse {
   token: string;
 }
+
+export interface ApiError {
+  response?: {
+    data?: {
+      errors?: string[];
+      message?: string;
+    };
+  };
+  message: string;
+}

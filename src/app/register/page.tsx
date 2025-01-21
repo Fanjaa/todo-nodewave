@@ -11,7 +11,7 @@ export default function RegisterPage() {
           Register
         </h1>
         <p className="text-center font-roboto text-gray-500 mb-8">
-          Let's Sign up first for enter into Square Website. Uh She Up!
+          Let&apos;s Sign up first for enter into Square Website. Uh She Up!
         </p>
       </div>
       <div className="w-full max-w-lg mx-auto bg-white rounded-xl shadow-loginForm overflow-hidden md:max-w-2xl">
